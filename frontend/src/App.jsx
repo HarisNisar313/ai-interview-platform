@@ -23,7 +23,7 @@ function App() {
     setFeedback('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/analyze', {
+      const res = await axios.post('https://your-backend-name.onrender.com/api/analyze', {
         question: QUESTION_BANK[currentIndex],
         answer: answer
       });
