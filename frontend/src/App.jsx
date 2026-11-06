@@ -4,8 +4,9 @@ import './App.css';
 
 const QUESTION_BANK = [
   "Explain the difference between let, const, and var in JavaScript.",
-  "What is the Virtual DOM in React?",
-  "How does Node.js handle asynchronous operations?"
+  "What is the Virtual DOM in React, and why is it useful?",
+  "How does Node.js handle asynchronous operations without blocking the main thread?",
+  "Describe the concept of RESTful APIs."
 ];
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
       setFeedback(res.data.feedback);
     } catch (error) {
       console.error(error);
-      setFeedback("Error generating feedback. Make sure the backend is running.");
+      setFeedback("Error connecting to the AI analyzer. Please check your backend.");
     } finally {
       setLoading(false);
     }
@@ -41,36 +42,60 @@ function App() {
     setCurrentIndex((prev) => (prev + 1) % QUESTION_BANK.length);
   };
 
+  const skipQuestion = () => {
+    nextQuestion();
+  };
+
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>AI Interview Prep</h1>
+    <div className="container">
+      <h1 className="header-title">AI Technical Interviewer</h1>
       
-      <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-        <h3>Question {currentIndex + 1} of {QUESTION_BANK.length}</h3>
-        <p><strong>{QUESTION_BANK[currentIndex]}</strong></p>
+      <div className="card">
+        <div className="progress-text">Question {currentIndex + 1} of {QUESTION_BANK.length}</div>
+        <h2 className="question-text">{QUESTION_BANK[currentIndex]}</h2>
+        
+        <form onSubmit={handleSubmit}>
+          <textarea
+            className="textarea-input"
+            placeholder="Type your detailed answer here..."
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            disabled={loading || feedback}
+          />
+          
+          {!feedback && (
+            <div className="button-group">
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={skipQuestion}
+                disabled={loading}
+              >
+                Skip Question
+              </button>
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                disabled={loading || !answer.trim()}
+              >
+                {loading ? (
+                  <span className="loading-text">
+                    Analyzing 
+                    <span className="dot-typing"><span>.</span><span>.</span><span>.</span></span>
+                  </span>
+                ) : 'Submit Answer'}
+              </button>
+            </div>
+          )}
+        </form>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <textarea
-          rows="5"
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
-          placeholder="Type your answer here..."
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          disabled={loading}
-        />
-        <br />
-        <button type="submit" disabled={loading || !answer}>
-          {loading ? 'Analyzing...' : 'Submit Answer'}
-        </button>
-      </form>
-
       {feedback && (
-        <div style={{ marginTop: '2rem', padding: '1rem', border: '1px solid #4CAF50', borderRadius: '8px' }}>
-          <h4>AI Feedback:</h4>
-          <p style={{ whiteSpace: 'pre-wrap' }}>{feedback}</p>
-          <button onClick={nextQuestion} style={{ marginTop: '10px' }}>
-            Next Question
+        <div className="feedback-card">
+          <h3 className="feedback-title">AI Feedback</h3>
+          <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{feedback}</div>
+          <button className="btn btn-primary" onClick={nextQuestion} style={{ marginTop: '20px', width: '100%' }}>
+            Move to Next Question
           </button>
         </div>
       )}
